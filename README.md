@@ -3,6 +3,7 @@
 1. https://www.cs.yale.edu/homes/aspnes/pinewiki/C(2f)FloatingPoint.html (the reference unless stated otherwise)
 2. https://en.wikipedia.org/wiki/Single-precision_floating-point_format
 3. chatgpt
+4. https://pytorch.org/docs/stable/generated/torch.isclose.html#torch-isclose
 
 ## bits
 - floating-point types almost always give only an approximation to the correct value, albeit across a much larger range
@@ -114,12 +115,48 @@ Some examples:
 - it is very difficult to test floating-point numbers for equality, unless you are sure you have an exact value as described above
 - It is generally not the case, for example, that `(0.1+0.1+0.1) == 0.3` in C
 
-```py
-Python 3.10.8 (tags/v3.10.8:aaaf517, Oct 11 2022, 16:50:30) [MSC v.1933 64 bit (AMD64)] on win32
-Type "help", "copyright", "credits" or "license" for more information.
->>> 0.1 + 0.1 + 0.1 == 0.3
-False
+---
+
+> Absolute and relative errors are two ways to measure the difference between two floating-point values. In the context of float32, these errors help us understand the level of accuracy between two values being compared.
+>
+> 1. Absolute error: The absolute error is the difference between the true value and the measured/approximated value. It is the simplest way to quantify the difference between the two values.
+>
+> 2. Relative error: The relative error is the ratio of the absolute error to the true value. It measures the error in terms of the size of the true value, which helps to identify how significant the error is.[3]
+
+
+`Absolute error = |100.0 - 100.1| = 0.1`
 ```
+True value   Measured value
+   |------------|--------------|
+100.0          100.1
+    <----------->
+      0.1 (absolute error)
+```
+
+`Relative error = (Absolute error) / |True value| = 0.1 / 100.0 = 0.001`
+```
+True value   Measured value
+   |------------|--------------|
+100.0          100.1
+    <----------->
+      0.001 (relative error)
+```
+
+> For small numbers, the absolute error should be set to a smaller value because the difference between two small numbers is also likely to be small. A small absolute tolerance ensures that the comparison is sensitive to the differences in these small values. The relative error can be set to a higher value, as small numbers can have large relative errors while still being "close" in an absolute sense.
+>
+> For big numbers, the absolute error can be set to a larger value, as larger numbers will generally have larger differences between them. However, you should still be cautious not to set the absolute tolerance too large, as this may cause genuinely different numbers to be considered close. The relative error should be set to a smaller value, as large numbers will typically have small relative errors.[3]
+
+```py
+>>> import torch
+>>> torch.isclose(torch.tensor((1., 2, 3)), torch.tensor((1 + 1e-10, 3, 4)))
+tensor([ True, False, False])
+>>> torch.isclose(torch.tensor((float('inf'), 4)), torch.tensor((float('inf'), 6)), rtol=.5)
+tensor([True, True])
+>>> torch.tensor((1., 2, 3)).dtype, torch.tensor((1 + 1e-10, 3, 4)).dtype
+(torch.float32, torch.float32)
+>>> # torch.isclose(input, other, rtol=1e-05, atol=1e-08, equal_nan=False) → Tensor
+```
+[4]
 
 ## some c notes
 - If you mix two different floating-point types together, the less-precise one will be extended to match the precision of the more-precise one;
