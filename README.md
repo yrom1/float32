@@ -58,7 +58,7 @@ To represent negative infinity, the sign bit should be 1, and the exponent and f
 
 | 31  | 30 - 23  | 22 - 0                  |
 | --- | -------- | ----------------------- |
-| 0   | 11111111 | 00000000000000000000000 |
+| 1   | 11111111 | 00000000000000000000000 |
 
 
 > The reason why NaN requires so many bits to represent is that NaN is a special value that needs to carry additional information beyond just the sign, exponent, and fraction bits. NaN values need to be able to indicate the reason why the value is undefined or unrepresentable, such as whether it resulted from a division by zero, an invalid operation, or an indeterminate operation.
