@@ -7,12 +7,14 @@
 
 ## bits
 - floating-point types almost always give only an approximation to the correct value, albeit across a much larger range
-- the specific layout here is for 32-bit floats:
+- the specific layout here is for 32-bit floats (IEEE 754):
 
 ```
 bit  31 30    23 22                    0
      S  EEEEEEEE MMMMMMMMMMMMMMMMMMMMMMM
 ```
+
+![](eq.png)
 
 - The first bit is the sign (0 for positive, 1 for negative).
 - The following 8 bits are the exponent in excess-127 [(in other words we subtract 127 from exponent)] binary notation;
